@@ -3,58 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: waon-in <waon-in@student.42.fr>            +#+  +:+       +#+        */
+/*   By: wiaon-in <wiaon-in@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/15 06:41:11 by waon-in           #+#    #+#             */
-/*   Updated: 2024/01/15 07:30:03 by waon-in          ###   ########.fr       */
+/*   Created: 2025/09/28 10:28:34 by wiaon-in          #+#    #+#             */
+/*   Updated: 2025/12/14 18:10:34 by wiaon-in         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_putchar(int c)
+int	ft_check_hex(va_list *args, char c)
 {
-	write(1, &c, 1);
-	return (1);
+	char	*base;
+
+	if (c == 'x')
+	{
+		base = "0123456789abcdef";
+		return (ft_putnbr_base_len(va_arg(*args, unsigned int), base));
+	}
+	else if (c == 'X')
+	{
+		base = "0123456789ABCDEF";
+		return (ft_putnbr_base_len(va_arg(*args, unsigned int), base));
+	}
+	else if (c == 'p')
+		return (ft_putpointer(va_arg(*args, unsigned long long)));
+	return (0);
 }
 
-int	ft_putstr(char *str)
+int	ft_check_num(va_list *args, char c)
 {
-	int	i;
-
-	i = 0;
-	if (!str)
-	{
-		write(1, "(null)", 6);
-		return (6);
-	}
-	while (str[i] != '\0')
-		i += ft_putchar(str[i]);
-	return (i);
+	if (c == 'd' || c == 'i')
+		return (ft_putnbr_base_len(va_arg(*args, int), "0123456789"));
+	else if (c == 'u')
+		return (ft_putnbr_base_len(va_arg(*args, unsigned int), "0123456789"));
+	return (ft_check_hex(args, c));
 }
 
 int	ft_check(va_list *args, char c)
 {
-	int	length;
-
-	length = 0;
 	if (c == 'c')
-		length += ft_putchar(va_arg(*args, int));
+		return (ft_putchar(va_arg(*args, int)));
 	else if (c == 's')
-		length += ft_putstr(va_arg(*args, char *));
-	else if (c == 'p')
-		length += ft_putnbr_p(va_arg(*args, unsigned long));
-	else if (c == 'd' || c == 'i')
-		length += ft_putnbr(va_arg(*args, int));
-	else if (c == 'u')
-		length += ft_putnbr_u(va_arg(*args, unsigned int));
-	else if (c == 'x')
-		length += ft_putnbr_x(va_arg(*args, unsigned int));
-	else if (c == 'X')
-		length += ft_nbr_xb(va_arg(*args, unsigned int));
+		return (ft_putstr(va_arg(*args, char *)));
 	else if (c == '%')
-		length += ftputchar('%');
-	return (length);
+		return (ft_putchar('%'));
+	return (ft_check_num(args, c));
 }
 
 int	ft_printf(const char *s, ...)
@@ -74,7 +68,7 @@ int	ft_printf(const char *s, ...)
 			length += ft_check(&args, s[i]);
 		}
 		else
-			length += ft_putnbr(s[i]);
+			length += ft_putchar(s[i]);
 		i++;
 	}
 	return (length);

@@ -1,21 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wiaon-in <wiaon-in@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/28 10:28:53 by wiaon-in          #+#    #+#             */
-/*   Updated: 2025/12/02 21:49:28 by wiaon-in         ###   ########.fr       */
+/*   Created: 2025/08/31 00:56:34 by wiaon-in          #+#    #+#             */
+/*   Updated: 2025/12/14 17:21:45 by wiaon-in         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "libft.h"
 
-# include "libft/libft.h"
-# include <stdarg.h>
+void	ft_putnbr_fd(int n, int fd)
+{
+	long long	nb;
 
-int	ft_printf(const char *fmt, ...);
-
-#endif
+	nb = n;
+	if (nb < 0)
+	{
+		ft_putchar_fd('-', fd);
+		nb = -nb;
+	}
+	if (nb > 9)
+		ft_putnbr_fd((int)(nb / 10), fd);
+	ft_putchar_fd((char)((nb % 10) + '0'), fd);
+}

@@ -3,35 +3,49 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: waon-in <waon-in@student.42.fr>            +#+  +:+       +#+         #
+#    By: wiaon-in <wiaon-in@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/01/15 07:20:03 by waon-in           #+#    #+#              #
-#    Updated: 2024/01/15 07:29:12 by waon-in          ###   ########.fr        #
+#    Created: 2025/09/28 10:39:55 by wiaon-in          #+#    #+#              #
+#    Updated: 2025/12/14 17:03:21 by wiaon-in         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = libftprintf.a
-CC	= cc
-CFLAGS = -Wall -Wextra -Werror
+NAME        = libftprintf.a
 
-SRC = ft_printf.c ft_printf_utils.c
+CC          = cc
+CFLAGS      = -Wall -Wextra -Werror
 
-OBJ = ${SRC:.c=.o}
+LIBFT_DIR   = libft
+LIBFT_A     = $(LIBFT_DIR)/libft.a
+
+SRC         = ft_printf.c ft_printf_utils.c
+OBJ         = $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME):$(OBJ)
-	ar -rcs $(NAME) $(OBJ)
+$(NAME): $(OBJ)
+	$(MAKE) -C $(LIBFT_DIR)
+	mv $(LIBFT_A) .
+	ar x libft.a
+	ar rcs $(NAME) $(OBJ) *.o
+	rm -f *.o libft.a
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -I. -I$(LIBFT_DIR) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ)
+	rm -f $(OBJ)
+	$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
-	rm -rf $(NAME)
+	rm -f $(NAME) ft_printf.h.gch a.out
+	$(MAKE) -C $(LIBFT_DIR) fclean 
 
 re: fclean all
 
-.PHONY: re clean fclean all
+.PHONY: all clean fclean re
+
+
+
+
+	

@@ -3,70 +3,77 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: waon-in <waon-in@student.42.fr>            +#+  +:+       +#+        */
+/*   By: wiaon-in <wiaon-in@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/15 06:36:23 by waon-in           #+#    #+#             */
-/*   Updated: 2024/01/15 07:27:28 by waon-in          ###   ########.fr       */
+/*   Created: 2025/12/14 16:59:09 by wiaon-in          #+#    #+#             */
+/*   Updated: 2025/12/14 18:32:43 by wiaon-in         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_putnbr(long nb)
+int	ft_putstr(char *str)
 {
-	long	len;
+	size_t	len;
 
-	len = 0;
-	if (nb < 0)
+	if (str == NULL)
 	{
-		len += ft_putchar('-');
-		nb = -nb;
+		write(1, "(null)", 6);
+		return (6);
 	}
-	if (nb / 10 > 0)
-		len += ft_putnbr(nb / 10);
-	len += ft_putchar("0123456789"[nb % 10]);
-	return (len);
+	len = ft_strlen(str);
+	write(1, str, len);
+	return ((int)len);
 }
 
-int	ft_putnbr_u(unsigned int nb)
+int	ft_putchar(char c)
+{
+	write(1, &c, 1);
+	return (1);
+}
+
+int	ft_putpointer(unsigned long long p)
 {
 	int	len;
 
 	len = 0;
-	if (nb / 10 > 0)
-		len += ft_putnbr(nb / 10);
-	len += ft_putchar("0123456789"[nb % 10]);
+	if (p == 0)
+		len += ft_putstr("(nil)");
+	else
+	{
+		len = ft_putstr("0x");
+		len += ft_putptr_base_len(p, "0123456789abcdef");
+	}
 	return (len);
 }
 
-int	ft_putnbr_x(unsigned long nb)
+int	ft_putnbr_base_len(long long nbr, char *base)
 {
-	long	len;
+	int	len_base;
+	int	count;
 
-	len = 0;
-	if (nb / 16 > 0)
-		len += ft_putnbr_x(nb / 16);
-	len += ft_putchar("0123456789abcdef"[nb % 16]);
-	return (len);
+	count = 0;
+	len_base = ft_strlen(base);
+	if (nbr < 0)
+	{
+		count += ft_putchar('-');
+		nbr = -nbr;
+	}
+	if (nbr >= len_base)
+		count += ft_putnbr_base_len(nbr / len_base, base);
+	count += ft_putchar(base[nbr % len_base]);
+	return (count);
 }
 
-int	ft_putnbr_xb(unsigned int nb)
+int	ft_putptr_base_len(unsigned long long nbr, char *base)
 {
-	int	len;
+	int	len_base;
+	int	count;
 
-	len = 0;
-	if (nb / 16 > 0)
-		len += ft_nbr_xb(nb / 16);
-	len += ft_putchar("0123456789ABCDEF"[nb % 16]);
-	return (len);
-}
-
-int	ft_putnbr_p(unsigned long nb)
-{
-	int	len;
-
-	len = 0;
-	len += ft_putstr("0x");
-	len += ft_putnbr_x(nb);
-	return (len);
+	count = 0;
+	len_base = ft_strlen(base);
+	if (nbr >= (unsigned long long)len_base)
+		count += ft_putptr_base_len(nbr / len_base, base);
+	count += ft_putchar(base[nbr % len_base]);
+	return (count);
 }
